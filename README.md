@@ -1,5 +1,7 @@
 # Gallica-MCP
 
+[![npm version](https://img.shields.io/npm/v/gallica-mcp.svg)](https://www.npmjs.com/package/gallica-mcp)
+
 MCP server for searching the BnF (Bibliothèque nationale de France) via the `data.bnf.fr` SPARQL endpoint (`https://data.bnf.fr/sparql`).
 
 Search authors and works, resolve ARK identifiers, list editions (with Gallica links via `electronicReproduction`), look up by ISBN, or run your own read-only `SELECT` queries. Responses come back as Markdown tables (default) or JSON, plus structured `rows` for agents.
@@ -12,7 +14,26 @@ Data source: **data.bnf.fr (BnF)**. Data reuse under **Licence Ouverte / Open Li
 
 ## Install
 
+### From the npm registry (recommended)
+
+Run directly:
+
 ```bash
+npx -y gallica-mcp
+```
+
+Or install globally:
+
+```bash
+npm install -g gallica-mcp
+gallica-mcp
+```
+
+### From source
+
+```bash
+git clone https://github.com/Plexi09/Galica-MCP.git
+cd Galica-MCP
 npm install
 npm run build
 ```
@@ -28,20 +49,18 @@ PORT=8000 BNF_SPARQL_URL=https://data.bnf.fr/sparql node dist/http.js
 
 ### Claude Code
 
-Project scope (committed `.mcp.json` in this repo):
-
 ```bash
-claude mcp add Gallica -- node ./dist/index.js
+claude mcp add gallica -- npx -y gallica-mcp
 ```
 
-Or copy `.mcp.json`:
+Or copy this into `.mcp.json` (works from any directory; the `.mcp.json` committed in this repo pins the local build instead):
 
 ```json
 {
   "mcpServers": {
-    "Gallica": {
-      "command": "node",
-      "args": ["./dist/index.js"],
+    "gallica": {
+      "command": "npx",
+      "args": ["-y", "gallica-mcp"],
       "env": { "BNF_SPARQL_URL": "https://data.bnf.fr/sparql" }
     }
   }
@@ -50,14 +69,14 @@ Or copy `.mcp.json`:
 
 ### Claude Desktop
 
-Add to `claude_desktop_config.json` (see `examples/claude_desktop_config.json`):
+Add to `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "Gallica": {
       "command": "npx",
-      "args": ["-y", "Gallica-mcp"],
+      "args": ["-y", "gallica-mcp"],
       "env": { "BNF_SPARQL_URL": "https://data.bnf.fr/sparql" }
     }
   }
@@ -68,12 +87,12 @@ From source, use an absolute path instead: `node /absolute/path/to/Gallica-MCP/d
 
 ### Codex
 
-Codex uses TOML (`~/.codex/config.toml`). See `examples/codex-config.toml`:
+Codex uses TOML (`~/.codex/config.toml`):
 
 ```toml
 [mcp_servers.Gallica]
 command = "npx"
-args = ["-y", "Gallica-mcp"]
+args = ["-y", "gallica-mcp"]
 startup_timeout_sec = 20
 
 [mcp_servers.Gallica.env]
@@ -83,20 +102,20 @@ BNF_SPARQL_URL = "https://data.bnf.fr/sparql"
 Or via CLI:
 
 ```bash
-codex mcp add Gallica -- npx -y Gallica-mcp
+codex mcp add Gallica -- npx -y gallica-mcp
 ```
 
 ### Opencode
 
-See `opencode.json`:
+Global config (`~/.config/opencode/opencode.json`, no clone needed):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "Gallica": {
+    "gallica": {
       "type": "local",
-      "command": ["npx", "-y", "Gallica-mcp"],
+      "command": ["npx", "-y", "gallica-mcp"],
       "enabled": true,
       "environment": { "BNF_SPARQL_URL": "https://data.bnf.fr/sparql" }
     }
@@ -104,11 +123,13 @@ See `opencode.json`:
 }
 ```
 
+From a local clone, the `opencode.json` in this repo pins the built `dist/index.js` instead. Then restart opencode.
+
 ### Remote HTTP
 
 ```bash
-docker build -t Gallica-mcp .
-docker run -p 8000:8000 -e BNF_SPARQL_URL=https://data.bnf.fr/sparql Gallica-mcp
+docker build -t gallica-mcp .
+docker run -p 8000:8000 -e BNF_SPARQL_URL=https://data.bnf.fr/sparql gallica-mcp
 ```
 
 Then point your client at `http://localhost:8000/mcp`.
@@ -127,3 +148,4 @@ Then point your client at `http://localhost:8000/mcp`.
 
 Every list/detail tool returns `{ content, structuredContent: { rows, count, has_more } }`.
 A business miss (zero bindings) returns `isError: true` with a `No results found in BnF data.bnf.fr …` message.
+Title and author searches run on the endpoint's full-text index (accent-insensitive), so `search_works` stays fast even on very common titles.
