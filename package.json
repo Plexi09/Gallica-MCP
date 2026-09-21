@@ -1,13 +1,25 @@
 {
-  "name": "Gallica-mcp",
+  "name": "gallica-mcp",
   "version": "0.1.0",
   "description": "Gallica MCP server for BnF data.bnf.fr SPARQL tools",
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plexi09/Galica-MCP.git"
+  },
+  "homepage": "https://github.com/Plexi09/Galica-MCP#readme",
+  "bugs": {
+    "url": "https://github.com/Plexi09/Galica-MCP/issues"
+  },
+  "keywords": ["mcp", "model-context-protocol", "gallica", "bnf", "sparql", "bibliotheque-nationale-de-france"],
+  "files": ["dist", "README.md"],
   "bin": {
-    "Gallica-mcp": "./dist/index.js"
+    "gallica-mcp": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/index.js",
     "http": "node dist/http.js"
   },
