@@ -1,0 +1,1 @@
+{"$schema":"https://opencode.ai/config.json","mcp":{"gallica":{"type":"local","command":["node","/home/pierre-emmanuel/Documents/dev/Gallica-MCP/dist/index.js"],"enabled":true,"environment":{"BNF_SPARQL_URL":"https://data.bnf.fr/sparql"}}}}
