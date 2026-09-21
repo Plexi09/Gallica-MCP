@@ -1,1 +1,1 @@
-{"mcpServers": {"Gallica": {"args": ["/home/pierre-emmanuel/Documents/dev/Gallica-MCP/dist/index.js"], "command": "node", "env": {"BNF_SPARQL_URL": "https://data.bnf.fr/sparql"}}}
+{"mcpServers": {"gallica": {"args": ["-y", "gallica-mcp"], "command": "npx", "env": {"BNF_SPARQL_URL": "https://data.bnf.fr/sparql"}}}}
