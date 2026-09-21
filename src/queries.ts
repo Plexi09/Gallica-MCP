@@ -310,9 +310,11 @@ export function buildWorkTitleSearch(
     );
   }
   const fts = ftsMatchExpression(resolved.title);
+  const authorNeedle =
+    resolved.author !== undefined ? sanitizeSparqlString(resolved.author).trim() : "";
   const authorFilter =
-    resolved.author !== undefined && resolved.author.trim() !== ""
-      ? `  FILTER(CONTAINS(LCASE(STR(?creatorName)), LCASE("${sanitizeSparqlString(resolved.author)}")))\n`
+    authorNeedle !== ""
+      ? `  FILTER(CONTAINS(LCASE(STR(?title)), LCASE("${authorNeedle}")) || (BOUND(?creatorName) && CONTAINS(LCASE(STR(?creatorName)), LCASE("${authorNeedle}"))))\n`
       : "";
   const l = clampLimit(resolved.limit);
   const o = clampOffset(resolved.offset);
@@ -324,7 +326,10 @@ WHERE {
   ?work dcterms:title ?title .
   ?title bif:contains "${fts}" .
   OPTIONAL {
-    ?work dcterms:creator ?creator .
+    { ?work dcterms:creator ?creator . }
+    UNION { ?work dcterms:contributor ?creator . }
+    UNION { ?work marcrel:aut ?creator . }
+    UNION { ?work bnfroles:r70 ?creator . }
     ?creator foaf:name ?creatorName .
   }
   OPTIONAL { ?work dcterms:date ?date . }
